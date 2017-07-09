@@ -17,6 +17,9 @@
     <link rel="stylesheet" href="/admins/css/admin.css">
     <link rel="stylesheet" href="/admins/css/app.css">
     <script src="/admins/js/echarts.min.js"></script>
+    <style type="text/css">
+        @yield('css')
+    </style>
 </head>
 
 <body data-type="index">
@@ -170,13 +173,13 @@
                     </a>
                     <ul class="tpl-left-nav-sub-menu" style="display: block;">
                         <li>
-                            <a href="form-amazeui.html">
+                            <a href="/admin/user/index">
                                 <i class="am-icon-angle-right"></i>
                                 <span>用户列表</span>
                                 <i class="am-icon-star tpl-left-nav-content-ico am-fr am-margin-right"></i>
                             </a>
 
-                            <a href="form-line.html">
+                            <a href="/admin/user/add">
                                 <i class="am-icon-angle-right"></i>
                                 <span>用户添加</span>
                             </a>
@@ -216,5 +219,6 @@
 <script src="/admins/js/iscroll.js"></script>
 <script src="/admins/js/app.js"></script>
 
+@yield('js')
 </body>
 </html>
