@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="/admins/css/admin.css">
     <link rel="stylesheet" href="/admins/css/app.css">
     <script src="/admins/js/echarts.min.js"></script>
+    <script src="/layer/skin/default/layer.css"></script>
     <style type="text/css">
         @yield('css')
     </style>
@@ -167,7 +168,7 @@
 
                 <li class="tpl-left-nav-item">
                     <a href="javascript:;" class="nav-link tpl-left-nav-link-list">
-                        <i class="am-icon-wpforms"></i>
+                        <i class="am-icon-user"></i>
                         <span>用户管理</span>
                         <i class="am-icon-angle-right tpl-left-nav-more-ico am-fr am-margin-right tpl-left-nav-more-ico-rotate"></i>
                     </a>
@@ -186,7 +187,27 @@
                         </li>
                     </ul>
                 </li>
+                <li class="tpl-left-nav-item">
+                    <a href="javascript:;" class="nav-link tpl-left-nav-link-list">
+                        <i class="am-icon-list"></i>
+                        <span>分类管理</span>
+                        <i class="am-icon-angle-right tpl-left-nav-more-ico am-fr am-margin-right tpl-left-nav-more-ico-rotate"></i>
+                    </a>
+                    <ul class="tpl-left-nav-sub-menu" style="display: block;">
+                        <li>
+                            <a href="/admin/cate/index">
+                                <i class="am-icon-angle-right"></i>
+                                <span>分类列表</span>
+                                <i class="am-icon-star tpl-left-nav-content-ico am-fr am-margin-right"></i>
+                            </a>
 
+                            <a href="/admin/user/add">
+                                <i class="am-icon-angle-right"></i>
+                                <span>分类添加</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
 
             </ul>
         </div>
@@ -218,6 +239,7 @@
 <script src="/admins/js/amazeui.min.js"></script>
 <script src="/admins/js/iscroll.js"></script>
 <script src="/admins/js/app.js"></script>
+<script src="/layer/layer.js"></script>
 
 @yield('js')
 </body>

@@ -57,7 +57,7 @@ padding: 6px 12px;
                         <div class="am-btn-group am-btn-group-xs">
                             <button onclick="add()" type="button" class="am-btn am-btn-default am-btn-success"><span class="am-icon-plus"></span> 新增</button>
                             <button type="button" class="am-btn am-btn-default am-btn-secondary"><span class="am-icon-save"></span> 保存</button>
-                            <button type="button" class="am-btn am-btn-default am-btn-warning"><span class="am-icon-archive"></span> 审核</button>
+                            <button onclick="audit()" type="button" class="am-btn am-btn-default am-btn-warning"><span class="am-icon-archive"></span> 审核</button>
                             <button type="button" class="am-btn am-btn-default am-btn-danger"><span class="am-icon-trash-o"></span> 删除</button>
                         </div>
                     </div>
@@ -65,15 +65,15 @@ padding: 6px 12px;
                 <div class="am-u-sm-12 am-u-md-3">
                     <div class="am-form-group">
                         <select data-am-selected="{btnSize: 'sm'}" style="display: none;" name="status">
-                            <option value="">--请选择--</option>
-                            <option value="0">未激活</option>
-                            <option value="1">已激活</option>
+                            <option value="" @if($status == '')selected @endif>--请选择--</option>
+                            <option value="0" @if($status == '0')selected @endif>未激活</option>
+                            <option value="1" @if($status == '1')selected @endif>已激活</option>
                         </select>
                     </div>
                 </div>
                 <div class="am-u-sm-12 am-u-md-3">
                     <div class="am-input-group am-input-group-sm">
-                        <input type="text" class="am-form-field" name="key" value="@if(isset($_GET['key'])){{$_GET['key']}}@endif">
+                        <input type="text" class="am-form-field" name="key" value="{{$key}}">
                         <span class="am-input-group-btn">
                             <button class="am-btn  am-btn-default am-btn-success tpl-am-btn-success am-icon-search" type="submit"></button>
                         </span>
@@ -97,22 +97,22 @@ padding: 6px 12px;
                                 <th class="table-set">操作</th>
                             </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="manage">
                             @foreach($users as $v)
                                 <tr>
-                                    <td><input type="checkbox"></td>
-                                    <td>{{$v->id}}</td>
-                                    <td><a href="#">{{$v->username}}</a></td>
-                                    <td>{{$v->email}}</td>
-                                    <td>{{$v->status}}</td>
-                                    <td class="am-hide-sm-only">{{date('Y年m月d日 H:i:s', $v->created_at)}}</td>
-                                    <td class="am-hide-sm-only">{{date('Y年m月d日 H:i:s', $v->updated_at)}}</td>
+                                    <td><input type="checkbox" class="checks" name="checks[]" value="{{$v['id']}}"></td>
+                                    <td>{{$v['id']}}</td>
+                                    <td><a href="#">{{$v['username']}}</a></td>
+                                    <td>{{$v['email']}}</td>
+                                    <td>{{$v['status']}}</td>
+                                    <td class="am-hide-sm-only">{{date('Y年m月d日 H:i:s', $v['created_at'])}}</td>
+                                    <td class="am-hide-sm-only">{{date('Y年m月d日 H:i:s', $v['updated_at'])}}</td>
                                     <td>
                                         <div class="am-btn-toolbar">
                                             <div class="am-btn-group am-btn-group-xs">
-                                                <button type="button" onclick="edit({{$v->id}});" class="am-btn am-btn-default am-btn-xs am-text-secondary"><span class="am-icon-pencil-square-o"></span> 编辑</button>
+                                                <button type="button" onclick="edit({{$v['id']}});" class="am-btn am-btn-default am-btn-xs am-text-secondary"><span class="am-icon-pencil-square-o"></span> 编辑</button>
                                                 <button type="button" class="am-btn am-btn-default am-btn-xs am-hide-sm-only"><span class="am-icon-copy"></span> 复制</button>
-                                                <button type="button" onclick="del({{$v->id}});" class="am-btn am-btn-default am-btn-xs am-text-danger am-hide-sm-only"><span class="am-icon-trash-o"></span> 删除</button>
+                                                <button type="button" onclick="del({{$v['id']}});" class="am-btn am-btn-default am-btn-xs am-text-danger am-hide-sm-only delbut"><span class="am-icon-trash-o"></span> 删除</button>
                                             </div>
                                         </div>
                                     </td>
@@ -134,6 +134,19 @@ padding: 6px 12px;
         </div>
         <div class="tpl-alert"></div>
     </div>
+    {{-- 删除提示框 --}}
+    <div class="am-modal am-modal-confirm" tabindex="-1" id="my-confirm">
+        <div class="am-modal-dialog">
+            <div class="am-modal-hd">Amaze UI</div>
+            <div class="am-modal-bd">
+                确定删除当前用户吗？
+            </div>
+            <div class="am-modal-footer">
+                <span class="am-modal-btn" data-am-modal-cancel>取消</span>
+                <span class="am-modal-btn" data-am-modal-confirm>确定</span>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('js')
@@ -145,6 +158,51 @@ padding: 6px 12px;
     /***** 添加 *****/
     function add(){
         location.href = "/admin/user/add"
+    }
+    /***** 删除用户 *****/
+    function del(id){
+        $('#my-confirm').modal({
+            relatedElement: this,
+            onConfirm: function() {
+                $.get('/admin/user/del', {id:id}, function(data){
+                    if(data.status){
+                        location.reload();
+                    }
+                    layer.msg(data.msg);
+                }, 'json');
+            },
+            onCancel: function() {
+
+            }
+        });
+    }
+
+    /******** 全选反选 ********/
+    $(".tpl-table-fz-check").click(function(){
+        if($(this).prop('checked')){
+            $(".checks").prop('checked', true);
+        }else{
+            $(".checks").prop('checked', false);
+        }
+    })
+
+    /********* 审核 *********/
+    function audit(){
+        var ids = [];
+        $(".checks").each(function(k,v){
+            if($(v).prop('checked')){
+                ids.push($(v).val());
+            }
+        })
+        if(ids.length == 0){
+            layer.msg('请选择要审核的用户');return;
+        }
+        $.post("/admin/user/batch-audit", {ids:ids, _token:'{{csrf_token()}}'}, function(data){
+            if(data.status){
+                location.reload();
+            }
+            layer.msg(data.msg);
+        }, 'json');
     }
 </script>
 @endsection

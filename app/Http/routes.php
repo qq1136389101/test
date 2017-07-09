@@ -20,3 +20,5 @@ Route::get('/admin', function () {
 });
 
 Route::controller('/admin/user', 'UserController');
+
+Route::controller('/admin/cate', 'CateController');
